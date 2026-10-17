@@ -1,0 +1,14 @@
+{
+  "appId": "ch.duartesantos.opengym",
+  "appName": "openGym",
+  "serverUrl": "http://localhost/",
+  "node": {
+    "enable": false,
+    "entry": "main.js",
+    "autostart": true,
+    "files": []
+  },
+  "logging": {
+    "enabled": false
+  }
+}

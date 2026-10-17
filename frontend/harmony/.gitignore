@@ -1,0 +1,16 @@
+# Build output
+build/
+oh_modules/
+node_modules/
+.hvigor/
+local.properties
+
+# Signed/unsigned HAP artifacts
+*.hap
+*.app
+
+# Signing material — never commit
+*.p12
+*.cer
+*.p7b
+signing/

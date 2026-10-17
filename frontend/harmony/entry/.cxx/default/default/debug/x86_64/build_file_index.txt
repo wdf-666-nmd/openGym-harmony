@@ -1,0 +1,2 @@
+E:\Tianshu\opengym-harmony\frontend\harmony\entry\src\main\cpp\CMakeLists.txt
+E:\Tianshu\opengym-harmony\frontend\harmony\entry\src\main\cpp\capacitor_node\CMakeLists.txt

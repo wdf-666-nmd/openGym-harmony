@@ -1,0 +1,4 @@
+# ninja log v6
+7	1082	8139274197615782	capacitor_node/CMakeFiles/capacitor_node.dir/capacitor_node.cpp.o	f7459be3b21d77db
+91	1096	8139274198461580	capacitor_node/CMakeFiles/capacitor_node.dir/node_embed.cpp.o	ffea37c12d33b74a
+1096	1434	8139274208505166	E:/Tianshu/opengym-harmony/frontend/harmony/entry/build/default/intermediates/cmake/default/obj/x86_64/libcapacitor_node.so	6d9df59032141f35

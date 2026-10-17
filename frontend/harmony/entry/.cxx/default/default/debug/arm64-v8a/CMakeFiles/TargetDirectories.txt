@@ -1,0 +1,5 @@
+E:/Tianshu/opengym-harmony/frontend/harmony/entry/.cxx/default/default/debug/arm64-v8a/CMakeFiles/edit_cache.dir
+E:/Tianshu/opengym-harmony/frontend/harmony/entry/.cxx/default/default/debug/arm64-v8a/CMakeFiles/rebuild_cache.dir
+E:/Tianshu/opengym-harmony/frontend/harmony/entry/.cxx/default/default/debug/arm64-v8a/capacitor_node/CMakeFiles/capacitor_node.dir
+E:/Tianshu/opengym-harmony/frontend/harmony/entry/.cxx/default/default/debug/arm64-v8a/capacitor_node/CMakeFiles/edit_cache.dir
+E:/Tianshu/opengym-harmony/frontend/harmony/entry/.cxx/default/default/debug/arm64-v8a/capacitor_node/CMakeFiles/rebuild_cache.dir
