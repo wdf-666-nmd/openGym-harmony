@@ -27,7 +27,9 @@ const copy = (prefix, html, { sw = 'const CACHE = "og-1a2b3c"' } = {}) => ({
 })
 const check = files => {
   const dir = tree(files)
-  try { return checkMobileBundle(dir).map(p => p.replace(dir + '/', '')) }
+  // Windows: join() yields backslashes, so strip the temp prefix in a
+  // separator-agnostic way (replace(dir + sep, '') misses on the other OS).
+  try { return checkMobileBundle(dir).map(p => p.split(dir).pop().replace(/^[\\/]/, '').replaceAll('\\', '/')) }
   finally { rmSync(dir, { recursive: true, force: true }) }
 }
 

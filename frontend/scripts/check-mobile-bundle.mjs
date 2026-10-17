@@ -19,6 +19,7 @@ const COPIES = [
   'dist',
   'android/app/src/main/assets/public',
   'ios/App/App/public',
+  'harmony/entry/src/main/resources/rawfile/www',
 ]
 
 export function checkCopy(dir) {

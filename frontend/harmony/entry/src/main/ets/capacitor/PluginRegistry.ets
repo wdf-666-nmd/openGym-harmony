@@ -19,9 +19,12 @@ import { DevicePlugin } from './plugins/Device';
 import { FilesystemPlugin } from './plugins/Filesystem';
 import { HapticsPlugin } from './plugins/Haptics';
 import { KeyboardPlugin } from './plugins/Keyboard';
+import { LocalNotificationsPlugin } from './plugins/LocalNotifications';
 import { NetworkPlugin } from './plugins/Network';
 import { NodePlugin } from './plugins/Node';
 import { PreferencesPlugin } from './plugins/Preferences';
+import { PrintPlugin } from './plugins/Print';
+import { SharePlugin } from './plugins/Share';
 import { SplashScreenPlugin } from './plugins/SplashScreen';
 import { StatusBarPlugin } from './plugins/StatusBar';
 import { ToastPlugin } from './plugins/Toast';
@@ -38,9 +41,12 @@ export function registerPlugins(host: PluginHost): void {
     new FilesystemPlugin(host, context),
     new HapticsPlugin(host, context),
     new KeyboardPlugin(host, context),
+    new LocalNotificationsPlugin(host, context),
     new NetworkPlugin(host, context),
     new NodePlugin(host, context),
     new PreferencesPlugin(host, context),
+    new PrintPlugin(host, context),
+    new SharePlugin(host, context),
     new SplashScreenPlugin(host, context),
     new StatusBarPlugin(host, context),
     new ToastPlugin(host, context),
