@@ -65,3 +65,22 @@ openGym 是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项�
 1. 开放式测试目前主要面向已上架或过审应用的新版本——**首次提审的应用一般需要先走正式上架流程**（含软著）。如果 AGC 的开放式测试入口对首版不可用，fallback 是正式提审（材料相同，多一项软著）。提交前在 AGC 界面确认入口可用性。
 2. 健身类目在华为审核中归类"运动健康"，可能要求补充《健康类目承诺函》（AGC 表单内在线签署即可）。
 3. AGPL 开源：在"应用描述"已注明源码地址，满足合规要求；如审核要求补充开源证明，提供 GitHub 仓库链接截图即可。
+
+## 最终提交包（2026-10-17 更新）
+
+AGC 上架要求 .app 格式（非 .hap）。构建链：hvigor assembleApp 出未签名包 → hap-sign-tool 发布证书签名。
+
+**提交文件**：`E:\Tianshu\opengym-harmony\frontend\harmony\build\outputs\default\opengym-release.app`
+（发布证书 opengym_release 签名，189MB，versionName 1.0.0 / versionCode 1000000）
+
+复现命令：
+```
+cd frontend/harmony
+hvigorw assembleApp --no-daemon
+java -jar <SDK>/toolchains/lib/hap-sign-tool.jar sign-app -mode localSign \
+  -keyAlias opengymrelease -keyPwd <密码> \
+  -appCertFile <发布.cer> -profileFile <发布Profile.p7b> -profileSigned 1 \
+  -inFile build/outputs/default/harmony-default-unsigned.app \
+  -keystoreFile <发布.p12> -keystorePwd <密码> \
+  -signAlg SHA256withECDSA -outFile build/outputs/default/opengym-release.app
+```
