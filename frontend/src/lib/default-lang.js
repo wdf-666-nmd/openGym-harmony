@@ -62,7 +62,9 @@ export function effectiveLang(S, config, navLangs = browserLangs()) {
   let cfg = config
   if (!cfg) {
     const seen = cachedDefaultLang()
-    if (seen === null) return own
+    // v2 AGC 3.1: offline mobile builds never fetch /api/config, so `seen === null` on first
+    // boot; a fresh copy still follows the browser's languages instead of defaulting to English.
+    if (seen === null) return autoLang(S, { default_lang: '' }, navLangs) || own
     cfg = { default_lang: seen }
   }
   return autoLang(S, cfg, navLangs) || own
