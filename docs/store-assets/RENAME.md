@@ -23,9 +23,17 @@ UI 界面文案零改动（`frontend/src` 中 `(?i)gym` 零命中，品牌名不
 
 ## 第一步：重出 v3 包（构建仓库内执行）
 
+> **2026-10-20 已执行完毕，产物已验证**：
+> - `opengym-release-v3.app`（198573165B ≈ 189MB）已生成并完成发布签名（sign-app success）
+> - 包内验证：桌面名「开练日记」在 resources.index ✅；module.json label 引用链完整 ✅；图标为自绘图（512 重采样）✅
+> - **注意：本次构建必须设 `DEVECO_SDK_HOME` 环境变量**（值 `C:/Program Files/Huawei/DevEco Studio/sdk`），否则 hvigor 报 00303217 Configuration Error
+> - 发布证书曾于 10-20 被误删进回收站，已恢复到桌面原路径（.cer 2910B PEM + .p7b 4024B DER 均验格式无误）
+
 ```bash
 cd E:/Tianshu/opengym-harmony/frontend/harmony
 # DevEco 的 hvigorw.bat 在 Git Bash 下是坏的，必须用 node 直跑 hvigorw.js（见 docs/harmony.md）
+# 且必须设 SDK 环境变量（否则 hvigor 报 Invalid DEVECO_SDK_HOME）
+export DEVECO_SDK_HOME="C:/Program Files/Huawei/DevEco Studio/sdk"
 "C:/Program Files/Huawei/DevEco Studio/tools/node/node.exe" \
   "C:/Program Files/Huawei/DevEco Studio/tools/hvigor/bin/hvigorw.js" \
   assembleApp --no-daemon
@@ -53,7 +61,7 @@ bash resign-app.sh "C:/Users/21972/Desktop/opengym_releaseRelease.p7b"
    - 若 AGC 提示名称被占用（重名校验即时生效），备选名依次试：开练手账 / 开铁日记 / 练出日记
 2. **应用分类与标签（1.11 整改）**：分类改为「运动健康」，主标签设为「运动」；如 AGC 要求健康类目资质，表单内在线签署《健康类目承诺函》即可
 3. **应用介绍**：粘贴 SUBMISSION.md 更新后的「应用描述（完整版）」（开头已改为「开练日记是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项目 openGym 的鸿蒙适配版）」）
-4. **应用图标**：AGC 侧不动（哑铃图标继续用）；包内已同步替换为同一图标（1.20 整改），提交的图标与安装后显示将完全一致
+4. **应用图标**：AGC 侧更新为新自绘图（`docs/store-assets/app-icon-216.png` / 512 / 1024，gen-icon.mjs 纯代码生成，版权归本项目）；包内已同步（1.20 整改闭环——AGC 图标 = 包内图标 = 自绘图，三者同源）
 5. **一句话简介**、关键词、截图：不变（简介本就不含应用名）
 6. 备注栏注明：「本次版本为名称合规整改：应用更名为开练日记，功能与上一版本一致」
 
