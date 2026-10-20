@@ -1,11 +1,12 @@
-# openGym 华为应用市场（开放式测试）提审材料
+# 开练日记（原 openGym）华为应用市场提审材料
 
 > 以下内容按 AGC 提交表单的字段组织，直接复制粘贴即可。
-> 提交路径：AGC → 我的应用 → opengym → 版本管理与提审 → 提交「开放式测试」
+> 提交路径：AGC → 我的应用 → opengym → 版本管理与提审
+> 2026-10-21 更新：应用名称由 openGym 改为「开练日记」（9.5 条名称驳回整改），版本升至 1.0.1，详见 RENAME.md。
 
 ## 应用名称
 
-openGym
+开练日记
 
 ## 一句话简介（应用描述开头）
 
@@ -13,7 +14,7 @@ openGym
 
 ## 应用描述（完整版）
 
-openGym 是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项目 openGym 的鸿蒙适配版）。
+开练日记是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项目 openGym 的鸿蒙适配版）。
 
 核心功能：
 · 训练计划：按周编排训练日，内置推/拉/腿、上/下肢、全身、5×5 等经典入门计划，也可完全自定义
@@ -26,9 +27,9 @@ openGym 是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项�
 
 开源与致谢：本应用是开源项目 openGym（github.com/DuarteSantos8/openGym）的社区适配版本，遵循 AGPL-3.0 许可证，源码公开。
 
-## 版本说明（1.0.0）
+## 版本说明（1.0.1）
 
-首个鸿蒙版本。基于 openGym v1.4.1 移植：完整训练计划与记录功能、动作库、统计图表、本地提醒、备份导出。
+品牌整改版本：应用更名为「开练日记」以符合应用市场名称规范；功能与 1.0.0 完全一致。基于 openGym v1.4.1 移植：完整训练计划与记录功能、动作库、统计图表、本地提醒、备份导出。
 
 ## 关键词
 
@@ -58,7 +59,7 @@ openGym 是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项�
 ## 包文件
 
 提交用 HAP：`E:\Tianshu\opengym-harmony\frontend\harmony\entry\build\default\outputs\default\entry-release-signed.hap`
-（发布证书 opengym_release 签名，versionCode 1000000 / versionName 1.0.0，发布 Profile 已关联）
+（发布证书 opengym_release 签名，versionCode 1000001 / versionName 1.0.1，发布 Profile 已关联）
 
 ## 注意事项
 
@@ -70,8 +71,8 @@ openGym 是一款开源的健身训练追踪应用（基于 AGPL-3.0 开源项�
 
 AGC 上架要求 .app 格式（非 .hap）。构建链：hvigor assembleApp 出未签名包 → hap-sign-tool 发布证书签名。
 
-**提交文件**：`E:\Tianshu\opengym-harmony\frontend\harmony\build\outputs\default\opengym-release.app`
-（发布证书 opengym_release 签名，189MB，versionName 1.0.0 / versionCode 1000000）
+**提交文件**：`E:\Tianshu\opengym-harmony\frontend\harmony\build\outputs\default\opengym-release-v3.app`
+（发布证书 opengym_release 签名，189MB，versionName 1.0.1 / versionCode 1000001）
 
 复现命令：
 ```
@@ -82,5 +83,5 @@ java -jar <SDK>/toolchains/lib/hap-sign-tool.jar sign-app -mode localSign \
   -appCertFile <发布.cer> -profileFile <发布Profile.p7b> -profileSigned 1 \
   -inFile build/outputs/default/harmony-default-unsigned.app \
   -keystoreFile <发布.p12> -keystorePwd <密码> \
-  -signAlg SHA256withECDSA -outFile build/outputs/default/opengym-release.app
+  -signAlg SHA256withECDSA -outFile build/outputs/default/opengym-release-v3.app
 ```
