@@ -1024,7 +1024,7 @@ export default {
   'Pairing code': '配对码',
   'Connecting…': '连接中…',
   'Connect': '连接',
-  'How do you want to use openGym?': '你想如何使用 openGym？',
+  'How do you want to use 开练手账?': '你想如何使用开练手账？',
   'Use on this device': '在此设备上使用',
   'Local keeps everything on this phone. Connecting syncs to your own openGym server instead. You can switch later in Settings.': '本地模式会把所有内容保留在这部手机上。连接则会改为与你自己的 openGym 服务器同步。之后可以在设置中更改。',
 
