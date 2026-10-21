@@ -25,4 +25,32 @@ describe('MobileOnboarding brand name (AGC 9.5)', () => {
     const offenders = brandHits.filter(s => !/openGym (site|server)/.test(s))
     expect(offenders, '这些文案仍含 openGym 品牌名：' + JSON.stringify(offenders)).toEqual([])
   })
+
+  it('首页顶部标题：无用户时显示「开练手账」，不是 openGym', async () => {
+    const src = await import('node:fs').then(fs =>
+      fs.readFileSync(new URL('./Home.jsx', import.meta.url), 'utf8'))
+    expect(src, '首页 h1 仍硬编码 openGym 品牌名').not.toMatch(/\?\s*t\('Hi \{0\}',\s*user\.name\)\s*:\s*'openGym'/)
+    expect(src).toContain(": t('开练手账')")
+  })
+
+  it('登录页大标题显示「开练手账」，不是 openGym', async () => {
+    const src = await import('node:fs').then(fs =>
+      fs.readFileSync(new URL('./Login.jsx', import.meta.url), 'utf8'))
+    const h1 = src.match(/<h1[^>]*>([^<]*)<\/h1>/)
+    expect(h1, '登录页应有 h1 大标题').toBeTruthy()
+    expect(h1[1]).not.toBe('openGym')
+    expect(h1[1]).toContain('开练手账')
+  })
+
+  it('分享图的默认标题用「开练手账」，不是 openGym', async () => {
+    const src = await import('node:fs').then(fs =>
+      fs.readFileSync(new URL('../sheets.jsx', import.meta.url), 'utf8'))
+    expect(src, '分享默认名仍含 openGym 品牌名').not.toMatch(/w\.name\s*\|\|\s*'openGym'/)
+  })
+
+  it('设置页底部署名用「开练手账 v…」，不是 openGym v…', async () => {
+    const src = await import('node:fs').then(fs =>
+      fs.readFileSync(new URL('./Settings.jsx', import.meta.url), 'utf8'))
+    expect(src, '设置页署名仍含 openGym 品牌名').not.toMatch(/sp-version">openGym v/)
+  })
 })

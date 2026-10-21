@@ -6,7 +6,7 @@ P7B="${1:?用法: bash resign-app.sh <新p7b路径>}"
 JBR="C:/Program Files/Huawei/DevEco Studio/jbr/bin/java.exe"
 JAR="C:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony/toolchains/lib/hap-sign-tool.jar"
 APP="E:/Tianshu/opengym-harmony/frontend/harmony/build/outputs/default/harmony-default-unsigned.app"
-OUT="E:/Tianshu/opengym-harmony/frontend/harmony/build/outputs/default/opengym-release-v6.app"
+OUT="E:/Tianshu/opengym-harmony/frontend/harmony/build/outputs/default/opengym-release-v7.app"
 "$JBR" -jar "$JAR" sign-app -mode localSign \
   -keyAlias opengymrelease -keyPwd "612670.cmzz" \
   -appCertFile "C:/Users/21972/Desktop/opengym_release.cer" \
