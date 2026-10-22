@@ -8,6 +8,7 @@ import { t } from '../lib/i18n.js'
 import Icon from '../components/Icon.jsx'
 import { Button } from '../components/ui.jsx'
 import { askAddDeviceData } from '../sheets.jsx'
+import { LegalNotice } from '../components/PrivacyPolicy.jsx'
 import { normalizeServerUrl } from '../lib/remote.js'
 import { loadCfAccess, saveCfAccess } from '../lib/cf-access.js'
 
@@ -139,6 +140,8 @@ export default function MobileOnboarding() {
       </div>
       <div style={{ height: 18 }} />
       <Button icon="gear" onClick={() => openCfAccess()}>{t('Connection settings')}</Button>
+      {/* 首启页的隐私政策显著提示（AGC 7.5） */}
+      <LegalNotice />
     </div>
   )
 }

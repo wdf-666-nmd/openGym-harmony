@@ -29,6 +29,7 @@ import TimerFlash from './components/TimerFlash.jsx'
 import { openDeviceLinkRedeem } from './components/Passkeys.jsx'
 import Login from './views/Login.jsx'
 import MobileOnboarding from './views/MobileOnboarding.jsx'
+import { LegalNoticeDialog } from './components/PrivacyPolicy.jsx'
 import Home from './views/Home.jsx'
 import CheckIn from './views/CheckIn.jsx'
 import Plan from './views/Plan.jsx'
@@ -242,6 +243,9 @@ function Shell() {
       <Modals />
       <Toast />
       <TimerFlash />
+      {/* 首次启动 / 登录或注册前的隐私政策显著提示（AGC 7.5）。弹窗与 sheet 各自有层级，
+          这里只负责在未同意过时弹一次。 */}
+      <LegalNoticeDialog />
     </>
   )
 }

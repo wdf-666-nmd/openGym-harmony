@@ -11,6 +11,7 @@ import { Button, Segmented } from '../components/ui.jsx'
 import { askAddDeviceData } from '../sheets.jsx'
 import { passwordOn, PasswordRegisterForm, openPasswordSignIn } from '../components/PasswordAuth.jsx'
 import { openDeviceLinkRedeem } from '../components/Passkeys.jsx'
+import { LegalNotice } from '../components/PrivacyPolicy.jsx'
 
 function RegisterSheet({ close }) {
   const { setUser, pushState, pullState, loadConfig } = useStore()
@@ -62,6 +63,8 @@ function RegisterSheet({ close }) {
     </>}
     <div style={{ height: 12 }} />
     <Button variant="primary" onClick={go}>{t('Create passkey')}</Button>
+    {/* 注册页的隐私政策显著提示（AGC 7.5） */}
+    <LegalNotice />
   </>
 }
 
@@ -125,6 +128,8 @@ export default function Login() {
         : t("This browser doesn't support passkeys, and this instance requires an account. Try a browser or device with passkey support.")}</div>}
       {canGuest && <Button variant="ghost" className="dim" onClick={() => setGuest(true)}>{t('Continue without account')}</Button>}
       <div className="dim small" style={{ marginTop: 26, lineHeight: 1.5 }}>{pwOn ? t('Passkeys use {0}. A password works too, where passkeys do not.', bio()) : t('Passkeys use {0}. No passwords to remember.', bio())}<br />{t('Each profile keeps its own plan, workouts & body weight.')}</div>
+      {/* 登录页的隐私政策显著提示（AGC 7.5） */}
+      <LegalNotice />
     </div>
   )
 }
