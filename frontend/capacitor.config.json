@@ -8,7 +8,7 @@
   },
   "harmony": {
     "bundleName": "ch.duartesantos.opengym",
-    "appLabel": "openGym",
+    "appLabel": "开练手账",
     "nodeDir": false
   }
 }
