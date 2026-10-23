@@ -147,6 +147,11 @@ export default function CoachSetup() {
       <Row icon="key" iconTint="var(--acc)" title={t('Bring my own API key')}
         subtitle={t('This phone calls the provider directly with your key. Every request is charged to your account.')}
         accessory="chevron" onClick={() => setChoice('byok')} />
+      {/* A keyless sample — for a reviewer, or anyone who wants to see the Coach work before
+          wiring up a provider. Runs on an example profile; changes nothing. */}
+      <Row icon="sparkles" iconTint="var(--purple)" title={t('See the Coach in action')}
+        subtitle={t('Try it on an example profile — no API key needed, nothing sent anywhere.')}
+        accessory="chevron" onClick={() => nav('/coach/example')} />
     </Section>
 
     {choice === 'server' && !serverHasCoach && <div className="card">
