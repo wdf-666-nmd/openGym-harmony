@@ -18,6 +18,12 @@ import { LANGS } from './i18n-core.js'
 
 const KEYS = Object.keys(LANGS)
 
+// The app-store build (VITE_MOBILE=1) is a China-market listing: when nothing
+// determines the language — no instance default, no browser match — Chinese is
+// the default, not English. An English-locale test device at review must still
+// open in Chinese (AGC 3.1 rejected an all-English UI once already).
+const FALLBACK_LANG = import.meta.env.VITE_MOBILE === '1' ? 'zh' : 'en'
+
 /** A language tag ('pt-BR', 'pt_br', 'de-AT', 'en-US') as one of LANGS' keys, or null. */
 export function matchLocale(tag) {
   if (typeof tag !== 'string') return null
@@ -37,7 +43,7 @@ export function autoLang(S, config, navLangs = []) {
   if (!S || S.langAuto !== true) return null
   return matchLocale(config?.default_lang)
     || (navLangs || []).map(matchLocale).find(Boolean)
-    || 'en'
+    || FALLBACK_LANG
 }
 
 // The instance's DEFAULT_LANG as last seen on this device, so a boot does not show the browser's
@@ -57,7 +63,7 @@ function cachedDefaultLang() {
  * stands in for it; with none seen yet the copy's stored language is used unchanged.
  */
 export function effectiveLang(S, config, navLangs = browserLangs()) {
-  const own = (S && typeof S.lang === 'string' && S.lang) || 'en'
+  const own = (S && typeof S.lang === 'string' && S.lang) || FALLBACK_LANG
   if (!S || S.langAuto !== true) return own
   let cfg = config
   if (!cfg) {
