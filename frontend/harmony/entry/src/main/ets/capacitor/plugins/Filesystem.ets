@@ -79,7 +79,11 @@ export class FilesystemPlugin extends CapacitorPlugin {
       const file: fs.File = fs.openSync(path, fs.OpenMode.CREATE | fs.OpenMode.READ_WRITE | fs.OpenMode.TRUNC);
       fs.writeSync(file.fd, bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
       fs.closeSync(file);
-      call.resolve();
+      // The Capacitor spec resolves writeFile with `{ uri }` — shareExport chains
+      // the result straight into Share.share({ url: w.uri }); an empty resolve
+      // makes that url undefined and the export button do nothing at all.
+      const payload: FileUriPayload = { uri: `file://${path}` };
+      call.resolve(payload);
     } catch (e) {
       call.reject(`writeFile failed: ${String(e)}`);
     }
@@ -101,7 +105,8 @@ export class FilesystemPlugin extends CapacitorPlugin {
       const file: fs.File = fs.openSync(path, fs.OpenMode.CREATE | fs.OpenMode.READ_WRITE | fs.OpenMode.APPEND);
       fs.writeSync(file.fd, bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
       fs.closeSync(file);
-      call.resolve();
+      const payload: FileUriPayload = { uri: `file://${path}` };
+      call.resolve(payload);
     } catch (e) {
       call.reject(`appendFile failed: ${String(e)}`);
     }

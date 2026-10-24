@@ -148,7 +148,18 @@ export class LocalAssetServer {
     response.setResponseMimeType(mimeType);
     response.setResponseCode(200);
     response.setReasonMessage('OK');
-    response.setResponseHeader([{ headerKey: 'Access-Control-Allow-Origin', headerValue: '*' }]);
+    // The HTML carries the injected bridge (and Capacitor.PluginHeaders, which
+    // changes with the native side): letting the WebView cache it serves the
+    // previous install's headers after an update and quietly breaks plugin
+    // calls until the cache happens to expire. Hashed static assets may cache.
+    response.setResponseHeader(
+      mimeType.includes('text/html')
+        ? [
+          { headerKey: 'Access-Control-Allow-Origin', headerValue: '*' },
+          { headerKey: 'Cache-Control', headerValue: 'no-store' },
+        ]
+        : [{ headerKey: 'Access-Control-Allow-Origin', headerValue: '*' }],
+    );
     return response;
   }
 

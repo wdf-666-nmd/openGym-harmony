@@ -57,18 +57,21 @@ export abstract class CapacitorPlugin {
       call.reject('eventName is required');
       return;
     }
+    // The call is deliberately LEFT UNRESOLVED. Resolving it sends a
+    // save=false result to the registration's own callbackId: the runtime's
+    // returnResult treats that as "callback done" — it fires the just-registered
+    // handler once with an empty payload and then DELETES it, so every real
+    // notifyListeners() afterwards misses and no event is ever delivered
+    // (this is exactly the dead back key / dead appStateChange that shipped).
+    // Nothing awaits this call's resolve — proxy and runtime addListener both
+    // take the callbackId from the outbound message, not the result — so
+    // keeping it pending is safe and matches Capacitor's retained-callback
+    // semantics.
     const ids: string[] = this.listeners.get(eventName) ?? [];
-    if (ids.length === 0) {
-      ids.push(call.callbackId);
-      this.listeners.set(eventName, ids);
-      this.listenerCalls.set(call.callbackId, call);
-      call.resolve();
-      this.sendRetainedEvents(eventName);
-      return;
-    }
     ids.push(call.callbackId);
+    this.listeners.set(eventName, ids);
     this.listenerCalls.set(call.callbackId, call);
-    call.resolve();
+    this.sendRetainedEvents(eventName);
   }
 
   removeListener(call: PluginCall): void {

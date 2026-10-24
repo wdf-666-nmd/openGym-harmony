@@ -3,8 +3,8 @@
     "bundleName": "ch.duartesantos.opengym",
     "bundleType": "app",
     "vendor": "example",
-    "versionCode": 1000006,
-    "versionName": "1.0.6",
+    "versionCode": 1000007,
+    "versionName": "1.0.7",
     "icon": "$media:startIcon",
     "label": "$string:app_name"
   }

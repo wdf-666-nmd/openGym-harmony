@@ -222,6 +222,47 @@ export function onAppActive(cb) {
   ).catch(() => {})
 }
 
+// Edge-swipe back. The system back gesture (and the back key) reaches the app
+// as onBackPress → App.backButton (lib/back.js). When the WebView delivers an
+// edge-originated horizontal swipe to the page instead — the "custom gesture
+// conflicts with the system gesture" an AGC review flagged on a foldable — the
+// page claims it itself: the edge zone belongs to back by platform convention,
+// so such a swipe drives history.back() (which also closes a sheet: sheets
+// push their own history entries). Row-swipe gestures that start further in
+// are untouched.
+export const EDGE_BACK_PX = 24
+export const EDGE_BACK_MIN_DX = 64
+
+/** Pure: does a touch that started at startX belong to back, and did it move like a swipe? */
+export function isEdgeBackSwipe({ startX, startY, endX, endY, innerWidth, edge = EDGE_BACK_PX, minDx = EDGE_BACK_MIN_DX }) {
+  const inZone = startX <= edge || startX >= innerWidth - edge
+  const dx = endX - startX
+  const dy = endY - startY
+  return inZone && Math.abs(dx) >= minDx && Math.abs(dx) >= 2 * Math.abs(dy)
+}
+
+export function initEdgeBack() {
+  if (!MOBILE) return () => {}
+  let start = null
+  const onStart = e => { start = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } }
+  const onEnd = e => {
+    if (!start) return
+    const hit = isEdgeBackSwipe({
+      startX: start.x, startY: start.y,
+      endX: e.changedTouches[0].clientX, endY: e.changedTouches[0].clientY,
+      innerWidth: window.innerWidth,
+    })
+    start = null
+    if (hit) window.history.back()
+  }
+  document.addEventListener('touchstart', onStart, { passive: true })
+  document.addEventListener('touchend', onEnd, { passive: true })
+  return () => {
+    document.removeEventListener('touchstart', onStart)
+    document.removeEventListener('touchend', onEnd)
+  }
+}
+
 // WKWebView can't do blob-URL downloads, so the backup goes out through the OS share sheet
 // (Files, AirDrop, mail, …) from a temp file instead.
 export async function shareExport(json, filename) {

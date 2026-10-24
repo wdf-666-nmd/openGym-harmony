@@ -1,5 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { common } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BridgeHolder } from '../capacitor/bridgeInstance';
 import { CapacitorBridge } from '../capacitor/CapacitorBridge';
 
@@ -19,15 +20,24 @@ struct Index {
   }
 
   onBackPress(): boolean {
+    hilog.info(0x0000, 'IndexPage', 'onBackPress fired');
     // Capacitor contract first: if JS registered an `App.backButton`
-    // listener, let the web layer decide (usually App.exitApp()).
-    // Otherwise drive the in-app browser history (React) instead of the
-    // outer WebView, matching the demo app's address-bar navigation.
-    if (this.bridge?.onBackPressed()) {
+    // listener, let the web layer decide (sheet close / history back /
+    // press-again-to-exit — lib/back.js).
+    const handled = this.bridge?.onBackPressed();
+    hilog.info(0x0000, 'IndexPage', 'bridge handled back: %{public}s', String(handled));
+    if (handled) {
       return true;
     }
-    this.controller.runJavaScript('window.__browserBack ? window.__browserBack() : false');
-    return true;
+    // No JS listener (boot failed, old install): drive the WebView history
+    // ourselves, and only let the system leave the app at the root.
+    // The previous fallback poked a `window.__browserBack` hook that the
+    // mobile bundle never defined — a back gesture then did nothing at all.
+    if (this.controller.accessBackward()) {
+      this.controller.backward();
+      return true;
+    }
+    return false;
   }
 
   build() {

@@ -108,9 +108,16 @@ export class CapacitorBridge implements PluginHost {
   /**
    * The list advertised to JS as `Capacitor.PluginHeaders`.
    *
-   * `addListener`/`removeListener` are deliberately absent: `@capacitor/core`
-   * treats them as "special snowflakes" and routes them through the runtime's
-   * own `addListenerNative` instead.
+   * `addListener`/`removeListener`/`removeAllListeners` are advertised for EVERY
+   * plugin with rtype 'callback': @capacitor/core 7's plugin proxy routes
+   * `App.addListener(...)` through `addListenerNative`, which looks the method
+   * up in this header list — with rtype 'promise' the callback would not be
+   * retained, and with the method missing the call rejects `Unimplemented`
+   * before ever reaching the bridge. That is how a dead back key (and dead
+   * appStateChange/LocalNotifications listeners) shipped: the JS side
+   * registered nothing natively, so `onBackPressed()` fell through to a
+   * fallback that did nothing. The bridge dispatches these three names itself
+   * for every plugin (see `dispatch()`), so advertising them globally is safe.
    */
   getPluginHeaders(): PluginHeader[] {
     const headers: PluginHeader[] = [];
@@ -121,6 +128,10 @@ export class CapacitorBridge implements PluginHost {
           return;
         }
         const method: PluginMethod = { name: name, rtype: 'promise' };
+        methods.push(method);
+      });
+      LISTENER_METHODS.forEach((name: string) => {
+        const method: PluginMethod = { name: name, rtype: 'callback' };
         methods.push(method);
       });
       const header: PluginHeader = { name: plugin.getPluginId(), methods: methods };
@@ -355,6 +366,9 @@ export class CapacitorBridge implements PluginHost {
    */
   onBackPressed(): boolean {
     const app: CapacitorPlugin | undefined = this.plugins.get('App');
+    const has: boolean = app?.hasListeners('backButton') ?? false;
+    hilog.info(DOMAIN, TAG, 'onBackPressed: App plugin=%{public}s hasBackListener=%{public}s',
+      app !== undefined ? 'yes' : 'no', has ? 'yes' : 'no');
     if (!app) {
       return false;
     }

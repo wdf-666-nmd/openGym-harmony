@@ -29,7 +29,13 @@ export function makeBackHandler({ getSheets, closeSheet, toast, goBack, exit, no
     const sheets = getSheets()
     const action = decideBack({
       top: sheets[sheets.length - 1],
-      canGoBack: !!ev.canGoBack,
+      // The native side's canGoBack reads the WebView's back/forward list,
+      // which only counts document loads — an SPA's hash navigation never
+      // enters it (ArkWeb reports false for every in-app page change, so a
+      // back press armed the exit instead of walking pages). The router's
+      // own depth, kept in history.state.idx since react-router v6, is the
+      // truth that makes back walk pages before arming the exit.
+      canGoBack: !!ev.canGoBack || (window.history.state?.idx ?? 0) > 0,
       exitArmed: now() - armedAt < EXIT_WINDOW,
     })
     if (action !== 'arm-exit') armedAt = -Infinity

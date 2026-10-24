@@ -36,9 +36,9 @@ describe('harmony 桌面名与市场名一致（开练手账）', () => {
     expect(Object.values(map).some(v => /openGym/.test(v))).toBe(false)
   })
 
-  it('版本号已递增到 1.0.6(1000006)', () => {
+  it('版本号已递增到 1.0.7(1000007)', () => {
     const j = read('../harmony/AppScope/app.json5')
-    expect(j).toMatch(/"versionCode":\s*1000006/)
-    expect(j).toMatch(/"versionName":\s*"1\.0\.6"/)
+    expect(j).toMatch(/"versionCode":\s*1000007/)
+    expect(j).toMatch(/"versionName":\s*"1\.0\.7"/)
   })
 })

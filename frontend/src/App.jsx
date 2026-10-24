@@ -16,7 +16,7 @@ import { useWakeLock } from './lib/wakelock.js'
 import { installViewportGuard } from './lib/viewport-guard.js'
 import { installChipDrag } from './lib/hchips.js'
 import { syncPushSubscription } from './lib/push.js'
-import { MOBILE } from './lib/mobile.js'
+import { MOBILE, initEdgeBack } from './lib/mobile.js'
 import { exitWorkoutEdit, startFlow } from './sheets.jsx'
 import Icon from './components/Icon.jsx'
 import TabBar from './components/TabBar.jsx'
@@ -261,5 +261,8 @@ export default function App() {
     initBackButton().then(fn => { if (gone) fn(); else stop = fn })
     return () => { gone = true; stop?.() }
   }, [])
+  // Edge-originated horizontal swipes the WebView delivered to the page (instead
+  // of the system claiming them) drive history back too — lib/mobile.js.
+  useEffect(() => initEdgeBack(), [])
   return <HashRouter><Shell /></HashRouter>
 }
