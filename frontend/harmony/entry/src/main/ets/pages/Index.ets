@@ -51,6 +51,11 @@ struct Index {
         .databaseAccess(true)
         .geolocationAccess(true)
         .cacheMode(CacheMode.Default)
+        // AGC 审核建议（1.0.8 通过后的非阻塞项）：短音/瞬态音场景未适配音频焦点，
+        // 会打断后台音乐且不恢复。AMBIENT 会话让本 WebView 的短音与后台音乐并发
+        // 混音（对应建议中的「直接并发播放」路径），而不是抢焦点暂停对方。
+        // compileSdk 6.0.0(20) ≥ since 20，compatibleSdk 5.0.0(12) 下旧设备忽略该属性。
+        .mediaOptions({ audioSessionType: AudioSessionType.AMBIENT })
         .javaScriptProxy({
           object: this.bridge!.getProxyObject(),
           name: 'harmonyBridge',
