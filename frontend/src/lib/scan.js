@@ -31,8 +31,26 @@ function toCode(barcode) {
 // have to host); on iOS the plugin's native scanner. Returns the first barcode found, or null if
 // the user backed out without scanning. Throws if scanning isn't supported or permission is hard-
 // denied so the caller can explain why.
+//
+// HarmonyOS: the mlkit plugin has no native implementation there, so @capacitor/core falls back
+// to its web JS build, whose isSupported() just checks for BarcodeDetector — absent in the
+// ArkWeb WebView — and answers `false`. That made every scan answer「此设备不支持扫描」(AGC audit
+// on 1.0.9, Mate 80 RS / API 24). On HarmonyOS the view's own web paths work instead: this
+// function is only reached on MOBILE, so it throws the marker the view maps to opening
+// CameraScan — and importCodeFromImage below decodes with jsQR directly.
+
+// @capacitor/core sets CapacitorCustomPlatform.name = 'harmony' on the ArkWeb WebView
+// (rawfile/__capacitor/bridge.js:29); the native Android/iOS shells never define it.
+async function onHarmony() {
+  try {
+    const { Capacitor } = await import('@capacitor/core')
+    return Capacitor?.getPlatform?.() === 'harmony'
+  } catch (e) { return false }
+}
+
 export async function scanCode() {
   if (!MOBILE) throw new Error('Scanning is only available in the app')
+  if (await onHarmony()) throw new Error('harmony-web-scan')
   const { BarcodeScanner } = await import('@capacitor-mlkit/barcode-scanning')
 
   const { supported } = await BarcodeScanner.isSupported()
@@ -52,6 +70,9 @@ export async function scanCode() {
 export async function importCodeFromImage(file) {
   if (!file) return null
   if (!MOBILE) return (await import('./scan-web.js')).importCodeFromImageWeb(file)
+  // HarmonyOS: no mlkit native, and its web fallback only offers the same BarcodeDetector-less
+  // camera path — decode with our own jsQR pipeline (scan-web.js), which needs nothing native.
+  if (await onHarmony()) return (await import('./scan-web.js')).importCodeFromImageWeb(file)
   const { BarcodeScanner } = await import('@capacitor-mlkit/barcode-scanning')
   const { Filesystem, Directory } = await import('@capacitor/filesystem')
 

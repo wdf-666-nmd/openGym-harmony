@@ -213,6 +213,18 @@ function CardSheet({ close, card }) {
       if (!canRenderFmt(code.fmt)) { toast(t("That's not a QR code. Only QR cards can be shown here")); return }
       setValue(code.value)
     } catch (e) {
+      // HarmonyOS has no native scanner plugin; the view's own web camera sheet does the job
+      // there (jsQR on the video frames — lib/scan-web.js).
+      if (String(e && e.message) === 'harmony-web-scan') {
+        useUI.getState().openSheet(closeCam => <CameraScan
+          onCancel={closeCam}
+          onFound={code => {
+            closeCam()
+            if (!canRenderFmt(code.fmt)) { toast(t("That's not a QR code. Only QR cards can be shown here")); return }
+            setValue(code.value)
+          }} />)
+        return
+      }
       toast(scanErrorMessage(e))
     } finally { setBusy(false) }
   }
