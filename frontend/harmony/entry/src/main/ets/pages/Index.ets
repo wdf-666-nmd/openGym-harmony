@@ -1,6 +1,8 @@
 import { webview } from '@kit.ArkWeb';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { picker } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 import { BridgeHolder } from '../capacitor/bridgeInstance';
 import { CapacitorBridge } from '../capacitor/CapacitorBridge';
 
@@ -70,6 +72,40 @@ struct Index {
         })
         .onPageEnd(() => {
           this.bridge?.onPageReady();
+        })
+        // AGC 1.0.9 审核整改（问题3）：ArkWeb 的 <input type="file"> 需要宿主提供文件选择器，
+        // 否则点击「添加照片/视频」静默失败（CDP Page.fileChooserOpened 无回调实证）。
+        // 接 DocumentViewPicker（图片/视频/任意文件，无需运行时权限），把选中的 uri
+        // 交回 WebView 的 file input。返回 true 表示由本回调处理（阻止默认无行为）。
+        .onShowFileSelector((event: OnShowFileSelectorEvent): boolean => {
+          hilog.info(0x0000, 'IndexPage', 'file selector: mode=%{public}s accept=%{public}s', String(event.fileSelector.getMode()), event.fileSelector.getAcceptType().join(','));
+          const docSelect = new picker.DocumentSelectOptions();
+          // acceptType（MIME 如 image/*）映射为后缀过滤；空则不过滤（全部文件）
+          const mimeToSuffix: Record<string, string> = {
+            'image/*': '.jpg|.jpeg|.png|.webp|.gif|.heic',
+            'video/*': '.mp4|.webm|.mov|.m4v',
+            'image/jpeg': '.jpg|.jpeg', 'image/png': '.png', 'image/webp': '.webp', 'image/gif': '.gif',
+            'video/mp4': '.mp4', 'video/webm': '.webm', 'video/quicktime': '.mov',
+          };
+          const suffixes: Array<string> = [];
+          for (const m of event.fileSelector.getAcceptType()) {
+            const s = mimeToSuffix[m];
+            if (s) suffixes.push(...s.split('|'));
+          }
+          if (suffixes.length > 0) {
+            docSelect.fileSuffixFilters = suffixes;
+          }
+          docSelect.maxSelectNumber = 9;
+          const ctx: common.UIAbilityContext = BridgeHolder.context!;
+          const view = new picker.DocumentViewPicker(ctx);
+          view.select(docSelect).then((uris: Array<string>) => {
+            hilog.info(0x0000, 'IndexPage', 'file selector picked %{public}d', uris.length);
+            event.result.handleFileList(uris);
+          }).catch((err: BusinessError) => {
+            hilog.warn(0x0000, 'IndexPage', 'file selector cancelled: %{public}s', String(err?.message ?? err));
+            event.result.handleFileList([]);
+          });
+          return true;
         })
         .width('100%')
         .height('100%')
