@@ -38,7 +38,10 @@ export class FilesystemPlugin extends CapacitorPlugin {
 
   readFile(call: PluginCall): void {
     const path: string = this.resolvePath(call.getString('directory'), call.getString('path'));
-    const encoding: string = call.getString('encoding', 'utf8');
+    // Capacitor 规范：未指定 encoding 时 data 按 base64 处理（写二进制/读回 base64）。
+    // 此前默认 'utf8' 与官方不符——media-store 的分片写入依赖该默认，导致磁盘上
+    // 存的是 base64 文本而非图片字节，图片全部无法渲染（1.0.9 审核「无法查看」根因之一）。
+    const encoding: string = call.getString('encoding', 'base64');
     try {
       if (!this.exists(path)) {
         call.reject(`File does not exist: ${path}`, 'NOT_EXISTS');
@@ -66,7 +69,7 @@ export class FilesystemPlugin extends CapacitorPlugin {
   writeFile(call: PluginCall): void {
     const path: string = this.resolvePath(call.getString('directory'), call.getString('path'));
     const recursive: boolean = call.getBoolean('recursive', false);
-    const bytes: Uint8Array | null = this.encode(call.getString('data'), call.getString('encoding', 'utf8'));
+    const bytes: Uint8Array | null = this.encode(call.getString('data'), call.getString('encoding', 'base64'));
     if (bytes === null) {
       call.reject('invalid data');
       return;
