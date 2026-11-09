@@ -41,7 +41,7 @@ function toCode(barcode) {
 
 // @capacitor/core sets CapacitorCustomPlatform.name = 'harmony' on the ArkWeb WebView
 // (rawfile/__capacitor/bridge.js:29); the native Android/iOS shells never define it.
-async function onHarmony() {
+export async function onHarmony() {
   try {
     const { Capacitor } = await import('@capacitor/core')
     return Capacitor?.getPlatform?.() === 'harmony'

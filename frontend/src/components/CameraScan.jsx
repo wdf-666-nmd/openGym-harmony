@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { t } from '../lib/i18n.js'
 import { decodeSource } from '../lib/scan-web.js'
 import { Button } from '../components/ui.jsx'
+import { onHarmony } from '../lib/scan.js'
 
 // Live camera scanner for the browser/PWA (the app build uses ML Kit's own UI instead — see
 // lib/scan.js). Opens the rear camera into a <video>, decodes a frame every ~150 ms until a QR
@@ -13,6 +14,10 @@ import { Button } from '../components/ui.jsx'
 export default function CameraScan({ onFound, onCancel }) {
   const videoRef = useRef(null)
   const [error, setError] = useState(null)
+  // Resolved once per mount: HarmonyOS has no browser to send the user to, so the
+  // denied copy points at system settings instead (AGC 1.0.10 feedback #1).
+  const [harmonyDenied, setHarmonyDenied] = useState(false)
+  useEffect(() => { onHarmony().then(setHarmonyDenied).catch(() => {}) }, [])
 
   useEffect(() => {
     let stream = null, timer = null, done = false
@@ -53,7 +58,11 @@ export default function CameraScan({ onFound, onCancel }) {
     {error
       ? <div className="muted small" style={{ marginBottom: 16, lineHeight: 1.5 }}>
           {error === 'denied'
-            ? t('Camera access was denied. Allow it in your browser and try again.')
+            // HarmonyOS (ArkWeb): there is no browser to jump to — point at system settings
+            // instead. All other platforms keep the original browser wording.
+            ? t(harmonyDenied
+              ? 'Camera access was denied. Allow it for 开练手账 in system settings and try again.'
+              : 'Camera access was denied. Allow it in your browser and try again.')
             : t('No camera available here. Import a photo or type the code instead.')}
         </div>
       : <>
