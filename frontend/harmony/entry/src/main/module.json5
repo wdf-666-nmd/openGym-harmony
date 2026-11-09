@@ -42,6 +42,22 @@
       },
       {
         "name": "ohos.permission.VIBRATE"
+      },
+      {
+        // reminderAgentManager.publishReminder requires this (system_grant);
+        // without it schedule fails with code 201 even after the notification
+        // enable-dialog is accepted (audit feedback #2 of 1.0.10).
+        "name": "ohos.permission.PUBLISH_AGENT_REMINDER"
+      },
+      {
+        // ArkWeb getUserMedia → onPermissionRequest grant path needs the app
+        // to hold CAMERA (audit feedback #1 of 1.0.10). user_grant → needs reason/usedScene.
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:camera_permission_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "inuse"
+        }
       }
     ]
   }

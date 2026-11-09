@@ -1,5 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { common } from '@kit.AbilityKit';
+import { abilityAccessCtrl, Permissions, PermissionRequestResult } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { picker } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -77,6 +78,35 @@ struct Index {
         // 否则点击「添加照片/视频」静默失败（CDP Page.fileChooserOpened 无回调实证）。
         // 接 DocumentViewPicker（图片/视频/任意文件，无需运行时权限），把选中的 uri
         // 交回 WebView 的 file input。返回 true 表示由本回调处理（阻止默认无行为）。
+        // AGC 1.0.10 可提升项①：ArkWeb 的 getUserMedia（网页相机）需要宿主挂
+        // onPermissionRequest，否则授权请求无人应答直接 NotAllowedError（实测 89ms 秒拒）。
+        // WebView 层 grant 之外，相机框架还要求 app 真的持有 CAMERA（user_grant）——
+        // 所以先 requestPermissionsFromUser 弹系统权限框，拿到再 grant 给网页。
+        .onPermissionRequest((event: OnPermissionRequestEvent) => {
+          const resources = event.request?.getAccessibleResource() ?? [];
+          hilog.info(0x0000, 'IndexPage', 'permission request: %{public}s', resources.join(','));
+          const ctx: common.UIAbilityContext = BridgeHolder.context!;
+          const needRuntime = resources.some((r: string) => r === 'TYPE_VIDEO_CAPTURE' || r === 'TYPE_AUDIO_CAPTURE');
+          if (!needRuntime) {
+            event.request?.grant(resources);
+            return;
+          }
+          const atManager = abilityAccessCtrl.createAtManager();
+          atManager.requestPermissionsFromUser(ctx, ['ohos.permission.CAMERA'])
+            .then((res: PermissionRequestResult) => {
+              const allowed = res.authResults?.length > 0 && res.authResults.every((n: number) => n === 0);
+              hilog.info(0x0000, 'IndexPage', 'camera runtime permission: %{public}s', String(allowed));
+              if (allowed) {
+                event.request?.grant(resources);
+              } else {
+                event.request?.deny();
+              }
+            })
+            .catch((err: BusinessError) => {
+              hilog.warn(0x0000, 'IndexPage', 'camera permission request failed: %{public}s', String(err?.message ?? err));
+              event.request?.deny();
+            });
+        })
         .onShowFileSelector((event: OnShowFileSelectorEvent): boolean => {
           hilog.info(0x0000, 'IndexPage', 'file selector: mode=%{public}s accept=%{public}s', String(event.fileSelector.getMode()), event.fileSelector.getAcceptType().join(','));
           const docSelect = new picker.DocumentSelectOptions();
