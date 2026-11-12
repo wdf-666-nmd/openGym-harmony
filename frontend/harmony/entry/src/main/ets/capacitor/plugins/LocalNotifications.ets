@@ -91,6 +91,14 @@ export class LocalNotificationsPlugin extends CapacitorPlugin {
     // `requestEnableNotification` pops the system dialog; when the user has
     // already granted, it resolves immediately. On refusal it rejects with
     // 1600004 — that is a "denied" answer, not a plugin failure.
+    //
+    // AGC review defect (1.0.10/1.0.11, hilog-verified on HarmonyOS 7.0 API 26):
+    // after ONE refusal the system stops popping the dialog — `requestEnableNotification`
+    // rejects with inner 110004 / external 1600004 and `canPopDialog=0` every later
+    // time. Toggling the reminder then looks dead: denied → syncReminder false →
+    // switch bounces back with no feedback and no way forward. So on 1600004 we
+    // pull up the per-app notification settings page directly; when the user flips
+    // the switch there and comes back, we re-check and answer with the real state.
     notificationManager.requestEnableNotification(this.context)
       .then(() => {
         const status: PermissionStatusPayload = { display: 'granted' };
@@ -98,8 +106,18 @@ export class LocalNotificationsPlugin extends CapacitorPlugin {
       })
       .catch((e: BusinessError) => {
         if (e.code === 1600004) {
-          const denied: PermissionStatusPayload = { display: 'denied' };
-          call.resolve(denied);
+          // Dialog budget spent (or user refused): guide to the settings page.
+          notificationManager.openNotificationSettings(this.context)
+            .catch(() => {})
+            .then(() => notificationManager.isNotificationEnabled())
+            .then((enabled: boolean) => {
+              const status: PermissionStatusPayload = { display: enabled ? 'granted' : 'denied' };
+              call.resolve(status);
+            })
+            .catch(() => {
+              const denied: PermissionStatusPayload = { display: 'denied' };
+              call.resolve(denied);
+            });
           return;
         }
         const prompt: PermissionStatusPayload = { display: 'prompt' };
